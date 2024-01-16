@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:dbserver="http://www.mulesoft.org/schema/mule/dbserver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/dbserver http://www.mulesoft.org/schema/mule/dbserver/current/mule-dbserver.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<munit:config name="new-test-suite.xml" >
+		<munit:parameterizations >
+			<munit:parameterization name="local" >
+				<munit:parameters >
+					<munit:parameter propertyName="env" value="test" />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<dbserver:config name="MUnit_DB_Server_Config" doc:name="MUnit DB Server Config" doc:id="608104db-1aff-4bbc-9fad-53b21737b97c" >
+		<dbserver:connection csv="user_table.csv" database="postgres" connectionStringParameters="MODE=MySQL" />
+	</dbserver:config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="0f0bfb16-a52e-4e7f-aeb8-d2f1468d8e87" >
+		<db:generic-connection url="${database.url}" driverClassName="${database.driver}" />
+	</db:config>
+	<munit:test name="new-test-suiteTest" doc:id="d46031e1-a6c0-4bb5-a067-2ea4ddcb797d" >
+		<munit:execution >
+			<flow-ref doc:name="getAllUser" doc:id="cf08b47c-fbcb-4b7c-84c9-76cfd4183c2f" name="getAllUser"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="43aa01a8-9bd2-4d4f-aa42-e8a716459a98" message="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="7e3ae4e0-fd85-40cd-be07-783c5ec4d7e2" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

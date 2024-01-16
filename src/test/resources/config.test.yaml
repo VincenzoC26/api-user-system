@@ -1,0 +1,5 @@
+database:
+  url: "jdbc:h2:tcp://localhost/mem:postgres"
+  driver: "org.h2.Driver"
+  user: ""
+  password: ""

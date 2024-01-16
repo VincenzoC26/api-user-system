@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:dbserver="http://www.mulesoft.org/schema/mule/dbserver" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
-	<configuration-properties doc:name="Configuration properties" doc:id="f6013bd3-aed2-47cb-aa7d-28b95b0079d1" file="config.yaml" />
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/dbserver http://www.mulesoft.org/schema/mule/dbserver/current/mule-dbserver.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="f6013bd3-aed2-47cb-aa7d-28b95b0079d1" file="config.${env}.yaml" />
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5066521c-7278-4405-9ff0-fe0f1c87b38d" >
 		<http:listener-connection host="0.0.0.0" port="${http.port}" />
 	</http:listener-config>
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="9f614af9-45de-4f21-8fe1-419c09d595b9" >
 		<db:generic-connection url="${database.url}" driverClassName="${database.driver}" user="${database.user}" password="${database.password}" />
 	</db:config>
+	<global-property doc:name="Global Property" doc:id="6084593d-da93-4c55-8edd-d4d5d415cbb7" name="env" value="dev" />
 </mule>

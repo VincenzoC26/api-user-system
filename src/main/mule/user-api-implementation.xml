@@ -11,8 +11,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	</http:listener-config>
 	<flow name="getAllUser" doc:id="0fbd3e97-0cfd-4dfc-9bcf-35549e3f3f15" >
 		<db:select doc:name="select all user" doc:id="f9fe336e-7cde-4d79-8a37-353b7af863d1" config-ref="Database_Config">
-			<db:sql ><![CDATA[SELECT *
-FROM public.user_table]]></db:sql>
+			<db:sql ><![CDATA[select * from public.user_table]]></db:sql>
 		</db:select>
 		<ee:transform doc:name="JSON output" doc:id="801fba68-e89f-4dff-b951-1b80b91ea307" >
 			<ee:message >
