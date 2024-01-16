@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="580b2154-e859-4f81-9799-6eb2355bbd5b" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="getAllUser" doc:id="0fbd3e97-0cfd-4dfc-9bcf-35549e3f3f15" >
+		<db:select doc:name="select all user" doc:id="f9fe336e-7cde-4d79-8a37-353b7af863d1" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT *
+FROM public.user_table]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="JSON output" doc:id="801fba68-e89f-4dff-b951-1b80b91ea307" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getSingleUser" doc:id="888fd2a9-db43-4b62-b910-39c4c4de3d4b" >
+		<set-variable value="#[attributes.uriParams.userId]" doc:name="user_id" doc:id="a56e25c5-a13d-4057-97ad-3702606d95e8" variableName="user_id"/>
+		<db:select doc:name="select user with user_id" doc:id="a4ec709a-bee3-4511-bc0c-ffe7e190883c" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT *
+FROM public.user_table u
+WHERE u.user_id = :user_id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{"user_id": vars.user_id as Number}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="JSON output" doc:id="8f285d82-130a-4b23-ab2e-b523a27bdf59" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="createUser" doc:id="f4fb24de-e8b4-439a-b31f-933cf89bc847" >
+		<db:stored-procedure doc:name="create user" doc:id="58e5ce85-5e04-4aaf-8acd-e5a4db2e9561" config-ref="Database_Config" target="output">
+			<db:sql ><![CDATA[call public.create_user(:user_firstName, :user_lastName, :user_email, :user_age, :user_gender)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'user_firstName': payload.userFirstName,
+	'user_lastName': payload.userLastName,
+	'user_email': payload.userEmail,
+	'user_age': payload.userAge,
+	'user_gender': payload.userGender
+}]]]></db:input-parameters>
+		</db:stored-procedure>
+		<ee:transform doc:name="JSON output" doc:id="e50d00dc-b481-4211-acd7-3a61807ab08b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "User added succesfully!",
+	"user_info": payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
