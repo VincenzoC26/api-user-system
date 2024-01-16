@@ -24,6 +24,18 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	<db:config name="Database_Config1" doc:name="Database Config" doc:id="0f0bfb16-a52e-4e7f-aeb8-d2f1468d8e87" >
 		<db:generic-connection url="${database.url}" driverClassName="${database.driver}" />
 	</db:config>
+	<munit:before-test name="new-test-suiteBefore_Test" doc:id="1817c6e5-ac12-41dd-9c0d-846040d97986" >
+		<dbserver:execute doc:name="add user to user_table" doc:id="af557fae-25b7-47dd-a7bd-801b12128498" config-ref="MUnit_DB_Server_Config" sql="insert into user_table(user_id,user_firstname,user_lastname,user_email,user_age,user_gender) values (13,'Andrea', 'Milano', 'milanoandrea@gmail.com', 63, 'Male');"/>
+	</munit:before-test>
+	<munit:test name="new-test-suiteTest1" doc:id="c4499d9a-d693-4049-8d0b-68ad2996e30f" >
+		<munit:execution >
+			<dbserver:execute-query doc:name="select all users" doc:id="6de35962-12b4-4364-8da7-6cc1bbd31080" config-ref="MUnit_DB_Server_Config" sql="select * from user_table"/>
+		</munit:execution>
+		<munit:validation>
+			<logger level="INFO" doc:name="payload" doc:id="8ae3344b-86a0-4205-b5de-8fb71c2c0b28" message="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="542ac569-a776-494f-b522-85a362822660" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
 	<munit:test name="new-test-suiteTest" doc:id="d46031e1-a6c0-4bb5-a067-2ea4ddcb797d" >
 		<munit:execution >
 			<flow-ref doc:name="getAllUser" doc:id="cf08b47c-fbcb-4b7c-84c9-76cfd4183c2f" name="getAllUser"/>
@@ -33,6 +45,41 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			<munit-tools:assert-that doc:name="Assert that" doc:id="7e3ae4e0-fd85-40cd-be07-783c5ec4d7e2" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
 		</munit:validation>
 	</munit:test>
+	<munit:test name="new-test-suiteTest2" doc:id="806bf979-fb62-40cf-8b77-cabf494d0939" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="12cc0cde-3a4c-49b9-ab94-4959aa4499bc" >
+				<munit:attributes value='#[{"uriParams": {"userId": 12}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="getSingleUser" doc:id="8a058705-880a-49e8-bf95-3d3a74326ed7" name="getSingleUser"/>
+		</munit:execution>
+		<munit:validation>
+			<logger level="INFO" doc:name="payload" doc:id="c783c33d-083c-4f26-ac31-8b514c1267b1" message="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a73097bd-f816-4eb5-ab16-0e7da6d68f62" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="new-test-suiteTest3" doc:id="75b20c1b-1f6d-4794-a683-5a7286d59cd0" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0772112f-5386-4cd1-97f5-2f4a41e4b92c" processor="db:stored-procedure">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="58e5ce85-5e04-4aaf-8acd-e5a4db2e9561" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-call flow="mockStoredProcedure" />
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="7c85f9e0-61e9-44d5-a28f-f8d98f21843a" >
+				<munit:payload value='#[output application/json&#10;---&#10;{&#10;    "userId": 14,&#10;    "userFirstName": "Nick",&#10;    "userLastName": "Rossi",&#10;    "userEmail": "nickrossi@gmail.com",&#10;    "userAge": 32,&#10;    "userGender": "Male"&#10;}]' />
+			</munit:set-event>
+			<flow-ref doc:name="createUser" doc:id="f9a5e899-f483-4d45-99f3-787354dd81aa" name="createUser"/>
+		</munit:execution>
+		<munit:validation>
+			<dbserver:validate-that doc:name="Validate that" doc:id="03de25aa-068b-43fc-9783-f67f0cb2d64e" config-ref="MUnit_DB_Server_Config" query="select * from user_table where user_id = 14" returns='"USER_ID","USER_FIRSTNAME","USER_LASTNAME","USER_EMAIL","USER_AGE","USER_GENDER"\n"14","Nick","Rossi","rossinick@gmail.com","63","Male"'/>
+			<logger level="INFO" doc:name="payload" doc:id="67d6316b-ba32-447e-b4d8-c1ddc8aeeedd" message="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	<flow name="mockStoredProcedure" doc:id="fc6458b4-15bd-426e-bdb0-1d71b2a95c04" >
+		<dbserver:execute doc:name="Execute" doc:id="af6610ed-f5c0-4016-84c1-a8fb5a53eac8" config-ref="MUnit_DB_Server_Config" sql="insert into user_table(user_id,user_firstname,user_lastname,user_email,user_age,user_gender) values (14,'Nick', 'Rossi', 'rossinick@gmail.com', 63, 'Male');"/>
+	</flow>
 
 
 </mule>
