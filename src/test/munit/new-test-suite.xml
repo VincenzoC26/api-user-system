@@ -78,7 +78,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		</munit:validation>
 	</munit:test>
 	<flow name="mockStoredProcedure" doc:id="fc6458b4-15bd-426e-bdb0-1d71b2a95c04" >
-		<dbserver:execute doc:name="Execute" doc:id="af6610ed-f5c0-4016-84c1-a8fb5a53eac8" config-ref="MUnit_DB_Server_Config" sql="insert into user_table(user_id,user_firstname,user_lastname,user_email,user_age,user_gender) values (14,'Nick', 'Rossi', 'rossinick@gmail.com', 63, 'Male');"/>
+		<dbserver:execute doc:name="Execute" doc:id="af6610ed-f5c0-4016-84c1-a8fb5a53eac8" config-ref="MUnit_DB_Server_Config" sql="insert into user_table(user_id,user_firstname,user_lastname,user_email,user_age,user_gender) values (14,'Nick', 'Rossi', 'rossinick@gmail.com', 63, 'Male');" target="output"/>
 	</flow>
 
 

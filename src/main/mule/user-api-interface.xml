@@ -3,7 +3,7 @@
     <http:listener-config name="user-api-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8090" />
     </http:listener-config>
-    <apikit:config name="user-api-config" api="resource::2de8aa36-fc1b-487f-8287-e4540019b520:user-api:1.0.0:raml:zip:user-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="user-api-config" api="resource::2de8aa36-fc1b-487f-8287-e4540019b520:user-api:1.0.1:raml:zip:user-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="user-api-main">
         <http:listener config-ref="HTTP_Listener_config" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -124,12 +124,12 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\user:user-api-config">
-		<flow-ref doc:name="getAllUser" doc:id="4b96daa9-5aac-4d54-a06c-f3ecf534b1b2" name="getAllUser"/>
+        <flow-ref doc:name="getAllUser" doc:id="4b96daa9-5aac-4d54-a06c-f3ecf534b1b2" name="getAllUser" />
     </flow>
     <flow name="get:\user\(userId):user-api-config">
-		<flow-ref doc:name="getSingleUser" doc:id="52d3ecb9-e104-46af-be5a-3fd7d2879668" name="getSingleUser"/>
+        <flow-ref doc:name="getSingleUser" doc:id="52d3ecb9-e104-46af-be5a-3fd7d2879668" name="getSingleUser" />
     </flow>
     <flow name="post:\user:application\json:user-api-config">
-		<flow-ref doc:name="createUser" doc:id="460e3df0-67ce-41e8-a84a-658edb64fc3a" name="createUser"/>
+        <flow-ref doc:name="createUser" doc:id="460e3df0-67ce-41e8-a84a-658edb64fc3a" name="createUser" />
     </flow>
 </mule>
