@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	</http:listener-config>
 	<flow name="getAllUser" doc:id="0fbd3e97-0cfd-4dfc-9bcf-35549e3f3f15" >
 		<db:select doc:name="select all user" doc:id="f9fe336e-7cde-4d79-8a37-353b7af863d1" config-ref="Database_Config">
-			<db:sql ><![CDATA[select * from public.user_table]]></db:sql>
+			<db:sql ><![CDATA[select * from user_table]]></db:sql>
 		</db:select>
 		<ee:transform doc:name="JSON output" doc:id="801fba68-e89f-4dff-b951-1b80b91ea307" >
 			<ee:message >
@@ -26,7 +26,7 @@ payload]]></ee:set-payload>
 		<set-variable value="#[attributes.uriParams.userId]" doc:name="user_id" doc:id="a56e25c5-a13d-4057-97ad-3702606d95e8" variableName="user_id"/>
 		<db:select doc:name="select user with user_id" doc:id="a4ec709a-bee3-4511-bc0c-ffe7e190883c" config-ref="Database_Config">
 			<db:sql ><![CDATA[SELECT *
-FROM public.user_table u
+FROM user_table u
 WHERE u.user_id = :user_id]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{"user_id": vars.user_id as Number}]]]></db:input-parameters>
 		</db:select>
@@ -41,7 +41,7 @@ payload]]></ee:set-payload>
 	</flow>
 	<flow name="createUser" doc:id="f4fb24de-e8b4-439a-b31f-933cf89bc847" >
 		<db:stored-procedure doc:name="create user" doc:id="58e5ce85-5e04-4aaf-8acd-e5a4db2e9561" config-ref="Database_Config" target="output">
-			<db:sql ><![CDATA[call public.create_user(:user_firstName, :user_lastName, :user_email, :user_age, :user_gender)]]></db:sql>
+			<db:sql ><![CDATA[call create_user(:user_firstName, :user_lastName, :user_email, :user_age, :user_gender)]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{
 	'user_firstName': payload.userFirstName,
 	'user_lastName': payload.userLastName,

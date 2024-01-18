@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:dbserver="http://www.mulesoft.org/schema/mule/dbserver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/dbserver http://www.mulesoft.org/schema/mule/dbserver/current/mule-dbserver.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<munit:config name="prova_test_file_sql.xml" >
+		<munit:parameterizations >
+			<munit:parameterization name="local" >
+				<munit:parameters >
+					<munit:parameter propertyName="env" value="test" />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<dbserver:config name="MUnit_DB_Server_Config1" doc:name="MUnit DB Server Config" doc:id="044e2f2a-d616-4ed6-b5c4-74c16ef3ac2b" >
+		<dbserver:connection database="postgres" sqlFile="prova.sql" connectionStringParameters="MODE=PostgreSQL" />
+	</dbserver:config>
+	<db:config name="Database_Config2" doc:name="Database Config" doc:id="b881ab38-7f51-4e82-b492-a0d77d57a1b6" >
+		<db:generic-connection url="${database.url}" driverClassName="${database.driver}" />
+	</db:config>
+	<munit:before-suite name="insertUser_before_all_test" doc:id="4dff9b0a-0207-4aaa-bef0-503d53cd9435" >
+		<dbserver:execute doc:name="insert new user to user_table" doc:id="3027e499-ad85-4bf8-aed3-9f9f2e4ea2bb" config-ref="MUnit_DB_Server_Config1" sql="insert into user_table(user_id,user_firstname,user_lastname,user_email,user_age,user_gender) values (13,'Nicola', 'Rossi', 'nicolarossi@gmail.com', 32, 'Male');"/>
+	</munit:before-suite>
+	<munit:test name="test2_getSingleUserFlow" doc:id="0d3cb7f6-79f6-4577-9989-93489f46cc5e" >
+		<munit:execution>
+			<munit:set-event doc:name="set uriParams" doc:id="57098ca3-15d1-4f45-9892-eaf238893146" >
+				<munit:attributes value='#[{"uriParams": {"userId": 13}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="getSingleUser" doc:id="5cfebe75-7718-4bce-94ea-a04adcbfdbd1" name="getSingleUser"/>
+		</munit:execution>
+		<munit:validation>
+			<logger level="INFO" doc:name="file.dwl" doc:id="d4f11f03-8899-44be-b8a2-303d71de9000" message="#[output application/json --- readUrl('classpath://getSingleUsertest\mock_payload.dwl')]"/>
+			<logger level="INFO" doc:name="payload" doc:id="68795640-5e29-4fa0-989d-bb5a3d1cb17d" message="#[payload]"/>
+			<munit-tools:assert-that doc:name="final output is correct" doc:id="5af1ec1a-ec87-45ce-940f-fb650e4b5fa2" expression="#[payload]" is="#[output application/json --- MunitTools::equalTo(readUrl('classpath://getSingleUsertest\mock_payload.dwl'))]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="test1_getAllUserFlow" doc:id="bf9fd7c5-bd82-4d0d-ab6a-cd7c39c62f38" >
+		<munit:execution >
+			<flow-ref doc:name="getAllUser" doc:id="2cf2316d-dad3-4a66-a05c-ce316644571e" name="getAllUser"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="payload" doc:id="afe8a3a5-ba02-483b-9cdf-9be4e58bf752" message="#[payload]"/>
+			<munit-tools:assert-that doc:name="final output is correct" doc:id="7d9fbdc3-4a7c-4d12-89f0-c6c50e8416ea" expression="#[payload]" is="#[output application/json --- MunitTools::equalTo(readUrl('classpath://correct_output\getAllUser_payload_output.dwl'))]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="test3_createUserFlow" doc:id="8094c7ee-7375-44eb-8380-a0c59daba520" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="stored procedure" doc:id="2065f599-0771-4628-ae3b-ca4514962ab4" processor="db:stored-procedure">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="58e5ce85-5e04-4aaf-8acd-e5a4db2e9561" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-call flow="storedProcedureSimulation" />
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="pass new user in the payload" doc:id="fabc4bcc-eb54-4c57-9ddf-529e50b0188c" >
+				<munit:payload value='#[output application/json&#10;---&#10;{&#10;    "userId": 14,&#10;    "userFirstName": "Nick",&#10;    "userLastName": "Rossi",&#10;    "userEmail": "nickrossi@gmail.com",&#10;    "userAge": 32,&#10;    "userGender": "Male"&#10;}]' />
+			</munit:set-event>
+			<flow-ref doc:name="createUser" doc:id="a299bfed-6bb7-45e9-bc08-18fb6999c578" name="createUser"/>
+		</munit:execution>
+		<munit:validation >
+			<dbserver:validate-that doc:name="user is correctly added" doc:id="a95ce092-cd54-40de-aebf-cb0731e3d531" config-ref="MUnit_DB_Server_Config1" query="select * from user_table where user_id = 14" returns='"USER_ID","USER_FIRSTNAME","USER_LASTNAME","USER_EMAIL","USER_AGE","USER_GENDER"\n"14","Nick","Rossi","rossinick@gmail.com","63","Male"' />
+		</munit:validation>
+	</munit:test>
+	<flow name="storedProcedureSimulation" doc:id="823db3a8-1b10-470c-b43e-a8a643a940f3" >
+		<dbserver:execute doc:name="insert new user" doc:id="ba188d3e-36f9-4d29-b242-39a8aebc6c12" config-ref="MUnit_DB_Server_Config1" sql="insert into user_table(user_id,user_firstname,user_lastname,user_email,user_age,user_gender) values (14,'Nick', 'Rossi', 'rossinick@gmail.com', 63, 'Male');"/>
+	</flow>
+
+
+</mule>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="user-api-implementation-suite.xml" />
+	<munit:test name="getAllUser-test" doc:id="e91cbbb0-85b7-4137-9b5d-8b2f23b4b169" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock select all user" doc:id="7c664fae-9bb8-4c7e-99b9-4c03b993c116" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f9fe336e-7cde-4d79-8a37-353b7af863d1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java  --- readUrl('classpath://getAllUsertest\mock_payload.dwl')]" mediaType="application/java " encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getAllUsertest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy JSON output" doc:id="82e53c31-b339-4560-8e8a-7fe7fa4ef1b0" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="801fba68-e89f-4dff-b951-1b80b91ea307" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="ff0d34c9-9e33-48af-b0ab-84b26b88b35c" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getAllUsertest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="da2e2028-463d-4dcf-9040-2b513acdd246" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getAllUsertest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="71abfaca-09cb-42f7-a4d6-be26587db84f" >
+				<munit:payload value="#[output application/json  --- readUrl('classpath://getAllUsertest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json " />
+				<munit:attributes value="#[readUrl('classpath://getAllUsertest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getAllUsertest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getAllUser" doc:id="4b99ddbc-f208-4227-ace9-ebd9d1cc45a0" name="getAllUser"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="18d2a3f5-ceb2-4b35-a36b-1404afd9b940" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getAllUsertest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify JSON output" doc:id="1e5e4f53-247a-4748-a620-6a25d9857650" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="801fba68-e89f-4dff-b951-1b80b91ea307" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getSingleUser-test" doc:id="5934e7b6-2267-44a4-adc3-1b9d614229a4" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock select user with user_id" doc:id="3dca2ee0-adc2-40bd-b9c4-f6526f6cb277" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a4ec709a-bee3-4511-bc0c-ffe7e190883c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java  --- readUrl('classpath://getSingleUsertest\mock_payload.dwl')]" mediaType="application/java " encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getSingleUsertest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="user_id" value="#[output application/java --- readUrl('classpath://getSingleUsertest\mock_variable_1.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy JSON output" doc:id="72c93240-1e12-4640-96f2-f598748db6a8" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8f285d82-130a-4b23-ab2e-b523a27bdf59" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="44dc6231-19ad-4693-899a-684b4a6a3473" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getSingleUsertest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="eaa9fd03-9da6-4ed6-af87-81fec76b357d" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getSingleUsertest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="fa493449-f0fa-4799-8c9e-7494f9f5c225" >
+				<munit:payload value="#[output application/json  --- readUrl('classpath://getSingleUsertest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json " />
+				<munit:attributes value="#[readUrl('classpath://getSingleUsertest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getSingleUsertest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getSingleUser" doc:id="b9e118f0-cb19-4ed3-9572-7465086b4e63" name="getSingleUser"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="6cdf08a0-29c4-44ce-aa67-662961668552" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getSingleUsertest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify JSON output" doc:id="d26165ef-e67f-4c92-8488-8a6f99c48b19" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8f285d82-130a-4b23-ab2e-b523a27bdf59" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="createUser-test" doc:id="fc0b41a8-d892-41c3-9384-1b3ffd89a15f" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock create user" doc:id="3d1eee62-0e9d-4002-9eed-f08b29104d63" processor="db:stored-procedure">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="58e5ce85-5e04-4aaf-8acd-e5a4db2e9561" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json  --- readUrl('classpath://createUsertest\mock_payload.dwl')]" mediaType="application/json " encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://createUsertest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="output" value="#[output application/java --- readUrl('classpath://createUsertest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://createUsertest\mock_variable_1.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy JSON output" doc:id="47bacde1-ba61-4ff6-8f4e-76919c14df3a" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e50d00dc-b481-4211-acd7-3a61807ab08b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="4008d20f-b9c2-4588-a62a-2bf36efd3577" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import createUsertest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="6bf0c38f-6f77-4e77-919c-0a5f54c2c4ff" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import createUsertest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="72cbdaf8-bc28-4c34-a2cc-c85e53252720" >
+				<munit:payload value="#[output application/json  --- readUrl('classpath://createUsertest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json " />
+				<munit:attributes value="#[readUrl('classpath://createUsertest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://createUsertest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to createUser" doc:id="70301b9c-3a8d-40a2-9357-a047b00ab885" name="createUser"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="7aa0dc99-e845-48ac-9b94-a4504844b014" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import createUsertest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify JSON output" doc:id="5fdab396-8249-40f9-95de-df581366c9f9" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e50d00dc-b481-4211-acd7-3a61807ab08b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
